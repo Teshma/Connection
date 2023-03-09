@@ -3,16 +3,16 @@ Bullet = require "bullet"
 Player = require "player"
 Enemy = require "enemy"
 Map = require "map"
+Collision = require "collision"
 
 GAMEDEBUG = true
 function love.load()
     Width, Height = love.graphics.getDimensions()
     Map:generate()
-    --Player:new(Map.grid[2][3][1], Map.grid[2][3][2])
     Player:new(32, 32)
     Map:addEntity(Player, 64, 0)
-    Enemies = {}
-    table.insert(Enemies, Enemy)
+    Map:addEntity(Enemy:new(), Width - 64, 64)
+    Map:addEntity(Enemy:new(), Width - 64, 64*2)
 end
 
 function love.update(dt)
@@ -21,7 +21,6 @@ end
 
 function love.draw()
     Map:draw()
-    Enemy:draw()
 end
 
 function love.keypressed(k)

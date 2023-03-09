@@ -1,12 +1,20 @@
 local enemy = {
-    x = 400,
-    y = 200,
-    w = 50,
-    h = 50
+    new = function (self, colour)
+        local table = {
+            x = 400,
+            y = 200,
+            w = 64,
+            h = 64,
+
+            update = function (self, dt)
+            
+            end,
+
+            draw = function (self)
+                love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
+            end
+        }
+        return table
+    end,
 }
-
-function enemy:draw()
-    love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
-end
-
 return enemy

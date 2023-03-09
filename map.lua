@@ -39,17 +39,25 @@ function map:addEntity(entity, x, y)
     table.insert(self.entities, {entity = entity, x = x, y = y})
 end
 
-function map:moveEnity(entity, deltaX, deltaY)
+function map:deleteEntity(entity)
+    for i, ent in ipairs(self.entities) do
+        if entity == ent then
+            table.remove(self.entities, i)
+        end
+    end
+end
+
+function map:moveEntity(entity, deltaX, deltaY)
     local columns = math.floor(deltaX/self.tilesize)
     local rows = math.floor(deltaY/self.tilesize)
     for i,ent in ipairs(self.entities) do
         if ent.entity == entity then
-            local x, y = ent.x/self.tilesize, ent.y/self.tilesize
+            local x, y = math.floor(ent.x/self.tilesize), math.floor(ent.y/self.tilesize)
             local newX, newY = x + columns, y + rows
             if GAMEDEBUG and DEFINES.Map then
                 print(entity:__tostring()..": +("..columns..","..rows..")".." ==> ".."("..newX..","..newY..")")
-                
             end
+            print(x, y)
             self.grid[math.max(y, 1)][math.max(x, 1)] = 0
             self.grid[newX][newY] = entity
             self.entities[i] = {entity = entity, x = newX * self.tilesize, y = newY * self.tilesize}
@@ -59,15 +67,18 @@ function map:moveEnity(entity, deltaX, deltaY)
 end
 
 function map:update(dt)
-    for _, ent in ipairs(self.entities) do
+    for i, ent in ipairs(self.entities) do
         ent.entity.x, ent.entity.y = ent.x, ent.y
+        if i + 1 <= #self.entities then
+            Collision.aabb(self.entities[i].entity, self.entities[i + 1].entity)
+        end
         ent.entity:update(dt)
     end
 end
 
 function map:draw()
     for _, ent in ipairs(self.entities) do
-        ent.entity:draw()
+        if ent.entity.draw ~= nil then ent.entity:draw() end
     end
 end
 
