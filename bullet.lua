@@ -6,7 +6,7 @@ local Bullet = {
             y = y_pos,
             w = 32,
             h = 4,
-            v = 500/2,
+            v = 500,
             movement = 0,
             update = function (self, dt)
                 self.movement = self.movement + self.v * dt
@@ -14,6 +14,8 @@ local Bullet = {
                     Map:moveEntity(self, self.movement, 0)
                     self.movement = 0
                 end
+                self.x = self.x + Map.tilesize/2
+                self.y = self.y + Map.tilesize/2
             end,
             draw = function (self)
                 love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
