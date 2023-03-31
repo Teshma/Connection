@@ -4,10 +4,12 @@ local map =
     grid = {},
     entities = {}
 }
+map.columns = math.floor(Width/map.tilesize)
+map.rows = math.floor(Height/map.tilesize)
 
 function map:generate()
-    local columns = math.floor(Width/self.tilesize)
-    local rows = math.floor(Height/self.tilesize)
+    local columns = map.columns
+    local rows = map.rows
     print(columns, rows)
     for i = 1, rows do
         self.grid[i] = {}
@@ -41,8 +43,9 @@ end
 
 function map:deleteEntity(entity)
     for i, ent in ipairs(self.entities) do
-        if entity == ent then
+        if entity == ent.entity then
             table.remove(self.entities, i)
+            
         end
     end
 end
@@ -57,22 +60,39 @@ function map:moveEntity(entity, deltaX, deltaY)
             if GAMEDEBUG and DEFINES.Map then
                 print(entity:__tostring()..": +("..columns..","..rows..")".." ==> ".."("..newX..","..newY..")")
             end
-            print(x, y)
-            self.grid[math.max(y, 1)][math.max(x, 1)] = 0
-            self.grid[newX][newY] = entity
-            self.entities[i] = {entity = entity, x = newX * self.tilesize, y = newY * self.tilesize}
-            
+            self.grid[math.min(math.max(y, 1), self.rows)][math.min(math.max(x, 1), self.columns)] = 0
+            self.grid[math.min(math.max(newY, 1), self.rows)][math.min(math.max(newX, 1), self.columns)] = entity
+            if self:checkPosition(newX, newY) then
+                self.entities[i] = {entity = entity, x = newX * self.tilesize, y = newY * self.tilesize}
+            else
+                if self.entities[i].entity.onScreenBounds ~= nil then self.entities[i].entity:onScreenBounds() end
+            end
+            return
         end
     end
 end
 
+function map:checkPosition(x, y)
+    if x > map.columns - 1 or x < 0 or y > map.rows - 1 or y < 0 then
+        return false
+    end
+    return true
+end
+
 function map:update(dt)
-    for i, ent in ipairs(self.entities) do
-        ent.entity.x, ent.entity.y = ent.x, ent.y
-        if i + 1 <= #self.entities then
-            Collision.aabb(self.entities[i].entity, self.entities[i + 1].entity)
+    for i, first_ent in ipairs(self.entities) do
+        first_ent.entity.x, first_ent.entity.y = first_ent.x, first_ent.y
+        for j, second_ent in ipairs (self.entities) do
+            if i ~= j then
+                local ent1 = first_ent.entity
+                local ent2 = second_ent.entity
+                if Collision.aabb(ent1, ent2) then
+                    if ent1.resolveCollision then ent1:resolveCollision(ent2) end
+                    if ent2.resolveCollision then ent2:resolveCollision(ent1) end
+                end
+            end
         end
-        ent.entity:update(dt)
+        first_ent.entity:update(dt)
     end
 end
 

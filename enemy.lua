@@ -12,6 +12,10 @@ local enemy = {
 
             draw = function (self)
                 love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
+            end,
+
+            __tostring = function (self)
+                return "enemy"
             end
         }
         return table

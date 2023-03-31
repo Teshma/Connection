@@ -6,20 +6,30 @@ local Bullet = {
             y = y_pos,
             w = 32,
             h = 4,
-            v = 500,
+            v = 500/2,
+            movement = 0,
             update = function (self, dt)
-                Map:moveEntity(self, self.v * dt, 0)
-                if self.x > Width or self.x < 0 or self.y > Height or self.y < 0 then
-                    Map:deleteEntity(self)
+                self.movement = self.movement + self.v * dt
+                if self.movement >= Map.tilesize then
+                    Map:moveEntity(self, self.movement, 0)
+                    self.movement = 0
                 end
             end,
             draw = function (self)
                 love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
             end,
+            onScreenBounds = function (self)
+                Map:deleteEntity(self)
+            end,
+            resolveCollision = function (self, entity)
+                if entity:__tostring() ~= "player" then
+                    Map:deleteEntity(self)
+                    return entity and Map:deleteEntity(entity)
+                end
+            end,
             __tostring = function ()
                 return "bullet"
-            end
-
+            end,
         }
         return table
     end,

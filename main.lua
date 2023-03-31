@@ -1,13 +1,13 @@
+Width, Height = love.graphics.getDimensions()
 DEFINES = require "defines"
 Bullet = require "bullet"
 Player = require "player"
 Enemy = require "enemy"
 Map = require "map"
 Collision = require "collision"
-
 GAMEDEBUG = true
+
 function love.load()
-    Width, Height = love.graphics.getDimensions()
     Map:generate()
     Player:new(32, 32)
     Map:addEntity(Player, 64, 0)
