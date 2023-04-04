@@ -6,13 +6,21 @@ Enemy = require "enemy"
 Map = require "map"
 Collision = require "collision"
 GAMEDEBUG = true
+math.randomseed(os.time())
 
 function love.load()
     Map:generate()
     Player:new(32, 32)
     Map:addEntity(Player, 64, 0)
-    Map:addEntity(Enemy:new(), Width - 64, 64)
-    Map:addEntity(Enemy:new(), Width - 64, 64*2)
+    for i = 1, Map.rows do
+        local colour = {1, 1, 1, 1}
+        if i % 2 == 0 then
+            colour[1] = 1;  colour[2] = 0;  colour[3] = 0;  colour[4] = 1
+        else
+            colour[1] = 0;  colour[2] = 0;  colour[3] = 1;  colour[4] = 1
+        end
+        Map:addEntity(Enemy:new(colour, math.random(0.4, 1)), Width - 64, 64 * (i - 1))
+    end
 end
 
 function love.update(dt)

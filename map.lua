@@ -10,20 +10,22 @@ map.rows = math.floor(Height/map.tilesize)
 function map:generate()
     local columns = map.columns
     local rows = map.rows
-    print(columns, rows)
     for i = 1, rows do
         self.grid[i] = {}
         for j = 1, columns do
             self.grid[i][j] = 0
         end
     end
-    local string = ""
-    for y, xtable in ipairs(self.grid) do
-        for x, value in ipairs(xtable) do
-            string = string.."["..y.."]["..x.."]"..tostring(value).." "
+    if DEFINES and DEFINES.Map then
+        print(columns, rows)
+        local string = ""
+        for y, xtable in ipairs(self.grid) do
+            for x, value in ipairs(xtable) do
+                string = string.."["..y.."]["..x.."]"..tostring(value).." "
+            end
         end
+        print(string)
     end
-    print(string)
 end
 
 function map:getPos(x, y)
@@ -36,7 +38,10 @@ function map:addEntity(entity, x, y)
     if x < self.tilesize or y < self.tilesize then
         row, column = 1, 1
     end
-    print(row, column)
+    if DEFINES and DEFINES.Map then
+        print(x, y)
+        print(row, column)
+    end
     self.grid[row][column] = entity
     table.insert(self.entities, {entity = entity, x = x, y = y})
 end
@@ -51,8 +56,7 @@ function map:deleteEntity(entity)
 end
 
 function map:moveEntity(entity, deltaX, deltaY)
-    local columns = math.floor(deltaX/self.tilesize)
-    local rows = math.floor(deltaY/self.tilesize)
+    local columns, rows = self:processDeltas(deltaX, deltaY)
     for i,ent in ipairs(self.entities) do
         if ent.entity == entity then
             local x, y = math.floor(ent.x/self.tilesize), math.floor(ent.y/self.tilesize)
@@ -71,6 +75,22 @@ function map:moveEntity(entity, deltaX, deltaY)
         end
     end
 end
+
+function map:processDeltas(deltaX, deltaY)
+    local columns, rows
+    if deltaX > 0 then
+        columns = math.floor(deltaX/self.tilesize)
+    else
+        columns = math.ceil(deltaX/self.tilesize)
+    end
+    if deltaY > 0 then
+        rows = math.floor(deltaY/self.tilesize)
+    else
+        rows = math.ceil(deltaY/self.tilesize)
+    end
+    return columns, rows
+end
+
 
 function map:checkPosition(x, y)
     if x > map.columns - 1 or x < 0 or y > map.rows - 1 or y < 0 then
