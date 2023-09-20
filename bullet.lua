@@ -26,7 +26,6 @@ local Bullet = {
             resolveCollision = function (self, entity)
                 if entity:__tostring() ~= "player" then
                     Map:deleteEntity(self)
-                    return entity and Map:deleteEntity(entity)
                 end
             end,
             __tostring = function ()

@@ -50,7 +50,6 @@ function map:deleteEntity(entity)
     for i, ent in ipairs(self.entities) do
         if entity == ent.entity then
             table.remove(self.entities, i)
-            
         end
     end
 end
@@ -101,6 +100,7 @@ end
 
 function map:update(dt)
     for i, first_ent in ipairs(self.entities) do
+        first_ent.entity:update(dt)
         first_ent.entity.x, first_ent.entity.y = first_ent.x, first_ent.y
         for j, second_ent in ipairs (self.entities) do
             if i ~= j then
@@ -112,7 +112,6 @@ function map:update(dt)
                 end
             end
         end
-        first_ent.entity:update(dt)
     end
 end
 

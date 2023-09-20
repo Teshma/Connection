@@ -19,7 +19,9 @@ function love.load()
         else
             colour[1] = 0;  colour[2] = 0;  colour[3] = 1;  colour[4] = 1
         end
-        Map:addEntity(Enemy:new(colour, math.random(0.4, 1)), Width - 64, 64 * (i - 1))
+        local speed = 1/math.random(1,Map.rows)
+        local hits = math.random(1,3)
+        Map:addEntity(Enemy:new(colour, speed, hits), Width - 64, 64 * (i - 1))
     end
 end
 
