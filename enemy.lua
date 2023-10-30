@@ -1,8 +1,8 @@
 local enemy = {
-    new = function (self, colour, speed, hits)
+    new = function (self, colour, speed, hits, x, y)
         local table = {
-            x = 400,
-            y = 200,
+            x = x or 400,
+            y = y or 200,
             w = 64,
             h = 64,
             health = hits,

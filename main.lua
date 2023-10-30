@@ -1,4 +1,10 @@
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+    package.loaded["lldebugger"] = assert(loadfile(os.getenv("LOCAL_LUA_DEBUGGER_FILEPATH")))()
+    require("lldebugger").start()
+end
+
 Width, Height = love.graphics.getDimensions()
+require "maths" 
 DEFINES = require "defines"
 Bullet = require "bullet"
 Player = require "player"
@@ -9,8 +15,7 @@ GAMEDEBUG = true
 math.randomseed(os.time())
 
 function love.load()
-    Map:generate()
-    Player:new(32, 32)
+    Player:new(0, 0)
     Map:addEntity(Player, 64, 0)
     for i = 1, Map.rows do
         local colour = {1, 1, 1, 1}
@@ -21,7 +26,7 @@ function love.load()
         end
         local speed = 1/math.random(1,Map.rows)
         local hits = math.random(1,3)
-        Map:addEntity(Enemy:new(colour, speed, hits), Width - 64, 64 * (i - 1))
+        Map:addEntity(Enemy:new(colour, speed, hits, Width - 64, 64 * (i - 1)))
     end
 end
 

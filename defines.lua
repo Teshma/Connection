@@ -2,7 +2,7 @@ local Defines = {}
 
 Defines.Player =
 {
-    Bullet = true
+    Bullet = false
 }
 
 Defines.Map = false

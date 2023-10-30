@@ -36,9 +36,9 @@ end
 function player:keypressed(k)
     -- Shooting
     if k == "space" then
-        local bullet = Bullet:new(self.x, self.y)
+        local bullet = Bullet:new(self.x + self.w, self.y + self.h/2)
         table.insert(self.bullets, bullet)
-        Map:addEntity(bullet, self.x, self.y)
+        Map:addEntity(bullet)
         if GAMEDEBUG and DEFINES.Player.Bullet then
             print("------------------------------------------------")
             print("fired bullet " .. #self.bullets)
