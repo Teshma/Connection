@@ -1,38 +1,48 @@
-local map =
+local Map =
 {
-    tilesize = 64,
+    initialTilesize = 128,
     grid = {},
     entities = {}
 }
-map.columns = math.floor(Width/map.tilesize)
-map.rows = math.floor(Height/map.tilesize)
 
-function map:getPos(x, y)
-    return (x / self.tilesize), (y / self.tilesize)
+Map.tilesize = Map.initialTilesize
+Map.columns = math.floor(Width/Map.tilesize)
+Map.rows = math.floor(Height/Map.tilesize)
+
+function Map:UpdateScale()
+    self.tilesize = self.initialTilesize / TilesizeScale
+    self.columns = math.floor(Width/self.tilesize)
+    self.rows = math.floor(Height/self.tilesize)
 end
 
-function map:addEntity(entity)
+function Map:AddEntity(entity)
     table.insert(self.entities, entity)
 end
 
-function map:deleteEntity(entity)
+function Map:DeleteEntity(entity)
     for i,v in ipairs(self.entities) do
         if v == entity then
             table.remove(self.entities, i)
         end
     end
+
+    for i,v in ipairs(Enemies) do
+        if v == entity then
+            table.remove(Enemies, i)
+        end
+    end
 end
 
-function map:moveEntity(entity, deltaX, deltaY)
+function Map:MoveEntity(entity, deltaX, deltaY)
     local tile_x, tile_y = math.floor(entity.x/self.tilesize), math.floor(entity.y/self.tilesize)
-    local collumn_shifts, row_shifts = self:processDeltas(deltaX, deltaY)
+    local collumn_shifts, row_shifts = self:ProcessDeltas(deltaX, deltaY)
     local new_grid_x, new_grid_y = tile_x + collumn_shifts, tile_y + row_shifts
     
     if GAMEDEBUG and DEFINES.Map then
         print(entity:__tostring()..": +("..collumn_shifts..","..row_shifts..")".." ==> ".."("..new_grid_x..","..new_grid_y..")")
     end
     
-    if self:checkPosition(new_grid_x, new_grid_y) then
+    if self:CheckPosition(new_grid_x, new_grid_y) then
         local new_pos_x, new_pos_y = entity.x + deltaX, entity.y + deltaY
         entity.x = new_pos_x
         entity.y = new_pos_y
@@ -41,7 +51,7 @@ function map:moveEntity(entity, deltaX, deltaY)
     end
 end
 
-function map:processDeltas(deltaX, deltaY)
+function Map:ProcessDeltas(deltaX, deltaY)
     local columns, rows
     if deltaX > 0 then
         columns = math.floor(deltaX/self.tilesize)
@@ -57,14 +67,14 @@ function map:processDeltas(deltaX, deltaY)
 end
 
 
-function map:checkPosition(x, y)
-    if x > map.columns - 1 or x < 0 or y > map.rows - 1 or y < 0 then
+function Map:CheckPosition(x, y)
+    if x > Map.columns - 1 or x < 0 or y > Map.rows - 1 or y < 0 then
         return false
     end
     return true
 end
 
-function map:update(dt)
+function Map:Update(dt)
     for i, first_ent in ipairs(self.entities) do
         first_ent:update(dt)
         for j, second_ent in ipairs (self.entities) do
@@ -78,10 +88,10 @@ function map:update(dt)
     end
 end
 
-function map:draw()
+function Map:Draw()
     for _, ent in ipairs(self.entities) do
         if ent.draw ~= nil then ent:draw() end
     end
 end
 
-return map
+return Map
